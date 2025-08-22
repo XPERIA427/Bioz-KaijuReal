@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>ArmansyahOffc</title>
+  <style>
+    body {
+      margin:0; padding:0; font-family: Arial; text-align:center; color:white;
+      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+      background-size:1400% 1400%; animation: rainbowBG 30s ease infinite;
+      display:flex; flex-direction:column; min-height:100vh; overflow:hidden;
+    }
+    @keyframes rainbowBG {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    #pp {
+      margin:20px auto; width:150px; height:150px; border-radius:50%;
+      border:5px solid white; background-size:cover; background-position:center;
+      background-image:url('https://i.pravatar.cc/200');
+    }
+    .btn {
+      display:block; margin:20px auto; padding:20px 60px; border:none; border-radius:20px;
+      font-size:24px; font-weight:bold; cursor:pointer; color:white;
+      background:linear-gradient(270deg, red,orange,yellow,green,blue,indigo,violet);
+      background-size:1400% 1400%; animation: rainbow 10s ease infinite;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .btn:active { transform:scale(0.9); opacity:0.8; }
+    @keyframes rainbow {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    footer { margin-top:auto; padding:10px; font-size:16px; opacity:0.8; }
+
+    /* Login palsu */
+    #loginFake {
+      position:absolute; top:20px; left:20px;
+      padding:8px 16px; background:#ff0080; border-radius:10px; cursor:pointer;
+      font-weight:bold; font-size:16px; white-space:nowrap;
+    }
+
+    /* Login asli */
+    #realLogin {
+      position:absolute; top:20px; right:20px;
+      padding:8px 16px; background:transparent; color:transparent;
+      border:none; cursor:pointer;
+    }
+
+    /* Modal login & edit */
+    .modal {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      display:none; justify-content:center; align-items:center;
+      background:rgba(0,0,0,0.9); flex-direction:column; color:white; z-index:999;
+    }
+    .modal input {
+      margin:8px; padding:12px; font-size:18px;
+      border-radius:10px; border:none; width:250px;
+    }
+    .modal button {
+      margin:8px; padding:12px 20px; font-size:18px;
+      border-radius:10px; border:none; background:#666; color:white; cursor:pointer;
+    }
+
+    /* Tombol edit extra */
+    #plusBtn,#saveBtn,#exitBtn { display:none; }
+
+    /* ===== Musik Player ===== */
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b1aff, #8b3bff);
+      box-shadow: 0 4px 14px #000a;
+      overflow: hidden;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    .music-btn img { width: 100%; height: 100%; object-fit: cover; }
+    .music-btn.on-player {
+      position: absolute;
+      bottom: 100%;
+      right: 15px;
+      left: auto;
+      transform: translateY(-10px);
+    }
+    .player {
+      position: fixed;
+      bottom: 20px;
+      left: -100%;
+      max-width: 350px;
+      background: linear-gradient(135deg, #1a1f5c, #5e2d91);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      box-shadow: 0 4px 25px #000c;
+      transition: left 0.4s ease;
+      z-index: 500;
+    }
+    .player.active { left: 20px; }
+    .cover { width: 50px; height: 50px; border-radius: 12px; overflow: hidden; margin-right: 10px; }
+    .cover img { width: 100%; height: 100%; object-fit: cover; }
+    .info { flex: 1; min-width: 0; text-align:left; }
+    .title { font-weight: bold; font-size: 14px; }
+    .artist { font-size: 12px; color: #ccc; }
+    .controls { margin-left: 10px; }
+    .controls button {
+      background: #fff; border: none; padding: 8px;
+      border-radius: 50%; cursor: pointer; font-size: 14px;
+      color: #4b2abf; box-shadow: 0 2px 10px #0007;
+    }
+    .progress-container { width: 100%; margin-top: 6px; display: flex; align-items: center; gap: 5px; font-size: 11px; color: #ddd; }
+    .bar { flex: 1; height: 5px; background: #2d246e; border-radius: 999px; overflow: hidden; cursor: pointer; }
+    .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #8c5bff, #3b9dff); }
+    audio { display: none; }
+  </style>
+</head>
+<body>
+  <!-- Login palsu -->
+  <div id="loginFake">Login</div>
+  <audio id="fakeSound" src="https://files.catbox.moe/937ojh.mp3"></audio>
+
+  <!-- Login asli -->
+  <button id="realLogin">LoginAsli</button>
+
+<!-- Profile -->
+<div style="text-align: center; margin-top: 20px;">
+  <img src="https://files.catbox.moe/tidvni.jpg" 
+       alt="Profile"
+       style="width: 130px; height: 130px; border-radius: 130%; object-fit: cover;" />
+</div>
+     
+<!-- Tombol list -->
+<div id="btnContainer">
+  <a href="https://whatsapp.com/channel/0029Vb6fPNHDjiOct4olxi2f" target="_blank">
+    <button class="btn" style="width:290px; height:60px;">Saluran admin</button>
+  </a>
+  
+  <a href="https://chat.whatsapp.com/BDWIhIMSesF5EVpUlF1mVR?mode=ac_t" target="_blank">
+    <button class="btn" style="width:290px; height:60px;">CAVYSTA</button>
+  </a>
+  
+  <a href="https://wa.me/6285766314330" target="_blank">
+    <button class="btn" style="width:290px; height:60px;">Nomor admin</button>
+  </a>
+</div>
+
+<style>
+  a {
+    text-decoration: none; /* hilangin garis bawah */
+  }
+</style>
+
+
+  <!-- Tombol edit extra -->
+  <button id="plusBtn" class="btn">+ Tambah Baru</button>
+  <button id="saveBtn" class="btn">Save</button>
+  <button id="exitBtn" class="btn">Exit</button>
+
+  <footer>©ArmansyahOffc</footer>
+
+  <!-- Modal login -->
+  <div class="modal" id="loginModal">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="User">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="checkLogin()">Login</button>
+  </div>
+
+  <!-- Modal edit -->
+  <div class="modal" id="editModal"></div>
+
+  <!-- ===== Musik Player ===== -->
+  <div class="music-btn" id="toggleBtn">
+    <img src="https://files.catbox.moe/jby349.jpeg" alt="Mashle Logo">
+  </div>
+  <div class="player" id="player">
+    <div class="cover"><img src="https://files.catbox.moe/jby349.jpeg" alt="cover"></div>
+    <div class="info">
+      <div class="title">Bling-Bang-Bang-Born</div>
+      <div class="artist">Creepy Nuts</div>
+      <div class="progress-container">
+        <span id="tcur">0:00</span>
+        <div class="bar" id="progress"><i></i></div>
+        <span id="tdur">0:00</span>
+      </div>
+    </div>
+    <div class="controls"><button id="playBtn">►</button></div>
+  </div>
+  <audio id="audio" src="https://files.catbox.moe/i1xtu3.mp3"></audio>
+
+<script type="module">
+  let loggedIn = false;
+
+  // Login palsu random
+  const fake = document.getElementById("loginFake");
+  const fakeSound = document.getElementById("fakeSound");
+  let fakeClickCount = 0;
+  const startX = 20, startY = 20;
+
+  fake.onclick = () => {
+    fakeSound.currentTime = 0;
+    fakeSound.play();
+    fakeClickCount++;
+    if (fakeClickCount === 1 || fakeClickCount === 2) {
+      const x = Math.random() * (window.innerWidth - 100);
+      const y = Math.random() * (window.innerHeight - 50);
+      fake.style.left = x + "px";
+      fake.style.top = y + "px";
+    } else if (fakeClickCount === 3) {
+      fake.style.left = startX + "px";
+      fake.style.top = startY + "px";
+      fakeClickCount = 0;
+    }
+  };
+
+  // Klik login asli → buka modal login
+  document.getElementById("realLogin").onclick = () => {
+    document.getElementById("loginModal").style.display = "flex";
+  };
+
+  function checkLogin() {
+    let usr = document.getElementById("username").value;
+    let pw = document.getElementById("password").value;
+    if(usr === "admin" && pw === "AnakAnj") {
+      loggedIn = true;
+      document.getElementById("loginModal").style.display = "none";
+      enableEditMode();
+    } else {
+      alert("Salah!");
+    }
+  }
+
+  function enableEditMode() {
+    document.getElementById("plusBtn").style.display = "block";
+    document.getElementById("saveBtn").style.display = "block";
+    document.getElementById("exitBtn").style.display = "block";
+    document.getElementById("pp").onclick = () => { showEditPP(); };
+    document.querySelectorAll(".btn").forEach(btn=>{
+      if(btn.id==="plusBtn"||btn.id==="saveBtn"||btn.id==="exitBtn") return;
+      btn.onclick = () => { showEditBtn(btn); };
+    });
+    document.getElementById("plusBtn").onclick = () => { showAddBtn(); };
+    document.getElementById("exitBtn").onclick = () => { disableEditMode(); };
+    document.getElementById("saveBtn").onclick = () => { alert("Perubahan disimpan!"); };
+  }
+
+  function disableEditMode() {
+    loggedIn = false;
+    document.getElementById("plusBtn").style.display = "none";
+    document.getElementById("saveBtn").style.display = "none";
+    document.getElementById("exitBtn").style.display = "none";
+    document.getElementById("pp").onclick = null;
+    document.querySelectorAll(".btn").forEach(btn=>{
+      if(btn.id==="plusBtn"||btn.id==="saveBtn"||btn.id==="exitBtn") return;
+      btn.onclick = null;
+    });
+  }
+
+  function showEditPP() {
+    let modal = document.getElementById("editModal");
+    modal.innerHTML = `<h2>Edit PP</h2><input type="text" id="ppUrl" placeholder="URL PP"><button onclick="savePP()">Selesai</button>`;
+    modal.style.display="flex";
+  }
+  window.savePP = function() {
+    let url = document.getElementById("ppUrl").value;
+    if(url) {
+      document.getElementById("pp").style.backgroundImage=`url('${url}')`;
+      set(ref(db,"profile/pp"),url);
+    }
+    document.getElementById("editModal").style.display="none";
+  }
+
+  function showEditBtn(btn) {
+    let modal = document.getElementById("editModal");
+    modal.innerHTML = `<h2>Edit Tombol</h2>
+      <input type="text" id="btnName" placeholder="Nama" value="${btn.innerText}">
+      <input type="text" id="btnUrl" placeholder="URL">
+      <button onclick="saveBtn('${btn.innerText}')">Selesai</button>`;
+    modal.style.display="flex";
+  }
+  window.saveBtn = function(oldName) {
+    let newName = document.getElementById("btnName").value;
+    let newUrl = document.getElementById("btnUrl").value;
+    let btns = document.querySelectorAll(".btn");
+    btns.forEach(b=>{
+      if(b.innerText===oldName){
+        b.innerText=newName;
+        if(newUrl) { b.onclick=()=>{window.open(newUrl,'_blank')}; }
+      }
+    });
+    if(newName){
+      set(ref(db,"buttons/"+newName),{name:newName,url:newUrl});
+    }
+    document.getElementById("editModal").style.display="none";
+  }
+
+  function showAddBtn() {
+    let modal = document.getElementById("editModal");
+    modal.innerHTML = `<h2>Tambah Tombol</h2>
+      <input type="text" id="newBtnName" placeholder="Nama">
+      <input type="text" id="newBtnUrl" placeholder="URL">
+      <button onclick="addBtn()">Selesai</button>`;
+    modal.style.display="flex";
+  }
+  window.addBtn = function() {
+    let name = document.getElementById("newBtnName").value;
+    let url = document.getElementById("newBtnUrl").value;
+    if(name){
+      let btn = document.createElement("button");
+      btn.className="btn"; btn.innerText=name;
+      if(url) btn.onclick=()=>window.open(url,'_blank');
+      if(loggedIn){ btn.onclick=()=>{showEditBtn(btn)}; }
+      document.getElementById("btnContainer").appendChild(btn);
+      set(ref(db,"buttons/"+name),{name:name,url:url});
+    }
+    document.getElementById("editModal").style.display="none";
+  }
+
+  // ===== Musik Player Script =====
+  const toggleBtn = document.getElementById('toggleBtn');
+  const player = document.getElementById('player');
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('playBtn');
+  const tcur = document.getElementById('tcur');
+  const tdur = document.getElementById('tdur');
+  const bar = document.getElementById('progress');
+  const fill = bar.querySelector('i');
+
+  function secToMMSS(s){
+    if(!isFinite(s)) return '0:00';
+    const m = Math.floor(s/60);
+    const ss = Math.floor(s%60).toString().padStart(2,'0');
+    return `${m}:${ss}`;
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    if (player.classList.contains('active')) {
+      player.classList.remove('active');
+      toggleBtn.classList.remove('on-player');
+      document.body.appendChild(toggleBtn);
+    } else {
+      player.classList.add('active');
+      player.appendChild(toggleBtn);
+      toggleBtn.classList.add('on-player');
+    }
+  });
+
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      playBtn.textContent = '❚❚';
+    } else {
+      audio.pause();
+      playBtn.textContent = '►';
+    }
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    tdur.textContent = secToMMSS(audio.duration);
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    tcur.textContent = secToMMSS(audio.currentTime);
+    fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  });
+
+  bar.addEventListener('click', e => {
+    const rect = bar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = ratio * audio.duration;
+  });
+
+  // ===== Firebase Setup =====
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  // ganti ini dengan config Firebase punyamu
+const firebaseConfig = {
+  apiKey: "AIzaSyD2xxxxxxx",  // ini unik, dari console
+  authDomain: "bio-man.firebaseapp.com",
+  databaseURL: "https://bio-man-default-rtdb.firebaseio.com",
+  projectId: "bio-man",
+  storageBucket: "bio-man.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef12345678"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Load data awal
+  window.addEventListener("load", () => {
+    const dbRef = ref(db);
+    get(child(dbRef, "profile/pp")).then(snap=>{
+      if(snap.exists()){
+        document.getElementById("pp").style.backgroundImage=`url('${snap.val()}')`;
+      }
+    });
+    get(child(dbRef, "buttons")).then(snap=>{
+      if(snap.exists()){
+        document.getElementById("btnContainer").innerHTML = "";
+        Object.values(snap.val()).forEach(btn=>{
+          let el = document.createElement("button");
+          el.className="btn"; el.innerText=btn.name;
+          if(btn.url) el.onclick=()=>window.open(btn.url,'_blank');
+          document.getElementById("btnContainer").appendChild(el);
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html> 
